@@ -18,6 +18,39 @@ var DOM = {};
   DOM[type] = createElement.bind(null, type)
 })
 
+// ReactCompositeComponent ,ReactDOMComponent, ReactDOMTextComponent
+
+var ReactDOMTextComponent = function(text) {
+  this._currentElement = text
+}
+
+ReactDOMTextComponent.prototype.mountComponent = function() {
+  return ('<span>' + this._currentElement + '</span>')
+}
+
+var ReactCompositeComponent = function(element) {
+  this._currentElement = element
+}
+
+ReactCompositeComponent.prototype.mountComponent = function() {
+}
+
+var ReactDOMComponent = function(element) {
+  this._currentElement = element
+}
+
+function instantiateReactComponent(node) {
+  if(typeof node === 'object') {
+    if (typeof node.type === 'string') {
+      return new ReactDOMComponent(node)
+    else if (typeof node.type === 'function')
+      return new ReactCompositeComponent()
+    }
+  else if (typeof node === 'string' || typeof node === 'number') {
+    return new ReactTextComponent(node)
+  }
+}
+
 var React = {
   createElement: createElement,
   DOM: DOM
