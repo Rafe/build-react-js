@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <title>React Lab</title>
+    <style>
+      a.button {
+        padding: 5px;
+        border: 1px gray solid;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='container'></div>
+    <!-- <script src='./react.js'></script> -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js'></script>
+    <script type='text/javascript'>
+      var DOM = React.DOM
+      var App = React.createClass({
+        getInitialState: function() {
+          return {
+            name: 'React',
+            timestamp: 0
+          }
+        },
+        handleClick: function() {
+          this.setState({
+            name: 'BOOOOOOOOOOOOOOOOM!!!!',
+            timestamp: new Date().getTime() - this.props.start
+          })
+        },
+        render: function() {
+          return DOM.div(null, [
+            DOM.h1(null, 'Welcome to ' + this.state.name + '!!'),
+            DOM.p(null, "Watchout for what React you're using... it might not be real!"),
+            DOM.p(null, "React is running for " + this.state.timestamp + "ms"),
+            DOM.a({ className: 'button', onClick: this.handleClick }, "Click me!!!")
+          ])
+        }
+      })
+
+      var start = new Date().getTime()
+      React.render(
+        React.createElement(App, { start: start }),
+        document.getElementById('container')
+      )
+    </script>
+  </body>
+</html>
