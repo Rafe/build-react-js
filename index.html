@@ -33,10 +33,12 @@
         },
         render: function() {
           return DOM.div(null, [
-            DOM.h1(null, 'Welcome to ' + this.state.name + '!!'),
-            DOM.p(null, "Watchout for what React you're using... it might not be real!"),
-            DOM.p(null, "React is running for " + this.state.timestamp + "ms"),
-            DOM.a({ className: 'button', onClick: this.handleClick }, "Click me!!!")
+            DOM.h1(null, ['Welcome to ' + this.state.name + '!!']),
+            DOM.div(null, [
+              DOM.p(null, ["Watchout for what React you're using... it might not be real!"]),
+              DOM.p(null, ["React is running for " + this.state.timestamp + "ms"])
+            ]),
+            DOM.a({ className: 'button', onClick: this.handleClick }, ["Click me!!!"])
           ])
         }
       })
