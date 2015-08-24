@@ -49,7 +49,11 @@ var ReactDOMComponent = function(element) {
 ReactDOMComponent.prototype.mountComponent = function() {
   var props = this._currentElement.props
 
-  var tagOpen = '<' + this._currentElement.type + '>'
+  var tagOpen = '<' +
+    this._currentElement.type +
+    this.createMarkupForStyles(props) +
+    '>'
+
   var tagClose = '</' + this._currentElement.type + '>'
 
   var renderedComponents = props.children.map(function(element){
@@ -63,19 +67,59 @@ ReactDOMComponent.prototype.mountComponent = function() {
   return tagOpen + tagContent + tagClose
 }
 
+ReactDOMComponent.prototype.createMarkupForStyles = function(props) {
+  if(props.className) {
+    return ' class=' + props.className + ' '
+  } else {
+    return ''
+  }
+}
+
+
 function instantiateReactComponent(node) {
   if(typeof node === 'object') {
     if (typeof node.type === 'string') {
       return new ReactDOMComponent(node)
     } else if (typeof node.type === 'function') {
-      return new ReactCompositeComponent()
+      return new ReactCompositeComponent(node)
     }
   } else if (typeof node === 'string' || typeof node === 'number') {
     return new ReactDOMTextComponent(node)
   }
 }
 
+function createClass(spec) {
+  var Constructor = function(props) {
+    this.props = props
+    this.state = this.getInitialState ? this.getInitialState() : null
+  }
+  Constructor.prototype = spec
+
+  return Constructor
+}
+
+function render(element, container) {
+  var topComponent = instantiateReactComponent(element)
+  container.innerHTML = topComponent.mountComponent()
+}
+
 var React = {
   createElement: createElement,
-  DOM: DOM
+  DOM: DOM,
+  createClass: createClass,
+  render: render,
 }
+
+var App = React.createClass({
+  getInitialState: function() {
+    return {}
+  },
+
+  render: function() {
+    return React.DOM.div(null, [ React.DOM.div(null, ['test'])])
+  }
+})
+
+var elem = createElement(App, null)
+
+console.log(instantiateReactComponent(elem).mountComponent())
