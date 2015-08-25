@@ -37,9 +37,9 @@ ReactCompositeComponent.prototype.mountComponent = function() {
 
   var renderedElement = instance.render()
 
-  var renderedComponent = instantiateReactComponent(renderedElement)
+  this._renderedComponent = instantiateReactComponent(renderedElement)
 
-  return renderedComponent.mountComponent()
+  return this._renderedComponent.mountComponent()
 }
 
 var ReactDOMComponent = function(element) {
@@ -56,11 +56,11 @@ ReactDOMComponent.prototype.mountComponent = function() {
 
   var tagClose = '</' + this._currentElement.type + '>'
 
-  var renderedComponents = props.children.map(function(element){
+  this._renderedComponents = props.children.map(function(element){
     return instantiateReactComponent(element)
   })
 
-  var tagContent = renderedComponents.map(function(component) {
+  var tagContent = this._renderedComponents.map(function(component) {
     return component.mountComponent()
   }).join('')
 
@@ -110,16 +110,4 @@ var React = {
   render: render,
 }
 
-var App = React.createClass({
-  getInitialState: function() {
-    return {}
-  },
-
-  render: function() {
-    return React.DOM.div(null, [ React.DOM.div(null, ['test'])])
-  }
-})
-
-var elem = createElement(App, null)
-
-console.log(instantiateReactComponent(elem).mountComponent())
+module.exports = React
