@@ -113,84 +113,84 @@ describe('React.createClass', function() {
   });
 })
 
-// // step 5: let's mount Components!
+// step 5: let's mount Components!
 
-// describe('ReactTextComponent.mountComponent', function() {
-  // it('creates markups with element', function() {
-    // var component = React.instantiateReactComponent('test')
-    // var markup = component.mountComponent('.0.1')
-    // expect(component._rootID).toEqual('.0.1')
-    // expect(markup).toEqual('<span data-reactid=".0.1">test</span>')
-  // })
-// })
+describe('ReactTextComponent.mountComponent', function() {
+  it('creates markups with element', function() {
+    var component = React.instantiateReactComponent('test')
+    var markup = component.mountComponent('.0.1')
+    expect(component._rootID).toEqual('.0.1')
+    expect(markup).toEqual('<span data-reactid=".0.1">test</span>')
+  })
+})
 
-// describe('ReactDOMComponent', function() {
-  // it('creates component with element', function() {
-    // var element = React.DOM.div(null, null)
-    // var component = React.instantiateReactComponent(element)
+describe('ReactDOMComponent', function() {
+  it('creates component with element', function() {
+    var element = React.DOM.div(null, null)
+    var component = React.instantiateReactComponent(element)
 
-    // var markup = component.mountComponent('.0.1')
+    var markup = component.mountComponent('.0.1')
 
-    // expect(component._rootID).toEqual('.0.1')
-    // expect(markup).toEqual('<div data-reactid=".0.1"></div>')
-  // })
+    expect(component._rootID).toEqual('.0.1')
+    expect(markup).toEqual('<div data-reactid=".0.1"></div>')
+  })
 
-  // it('creates component with class name', function() {
-    // var element = React.DOM.div({ className: 'button' }, null)
-    // var component = React.instantiateReactComponent(element)
+  it('creates component with class name', function() {
+    var element = React.DOM.div({ className: 'button' }, null)
+    var component = React.instantiateReactComponent(element)
 
-    // var markup = component.mountComponent('.0.1')
+    var markup = component.mountComponent('.0.1')
 
-    // expect(component._rootID).toEqual('.0.1')
-    // expect(markup).toEqual('<div class="button" data-reactid=".0.1"></div>')
-  // })
+    expect(component._rootID).toEqual('.0.1')
+    expect(markup).toEqual('<div class="button" data-reactid=".0.1"></div>')
+  })
 
-  // it('creates component tree', function() {
-    // var div = React.DOM.div
-    // var p = React.DOM.p
+  it('creates component tree', function() {
+    var div = React.DOM.div
+    var p = React.DOM.p
 
-    // var element = div(null, [
-      // div(null, [
-        // p(null, null),
-        // div(null, null)
-      // ])
-    // ])
+    var element = div(null, [
+      div(null, [
+        p(null, null),
+        div(null, null)
+      ])
+    ])
 
-    // var component = React.instantiateReactComponent(element)
+    var component = React.instantiateReactComponent(element)
 
-    // var markup = component.mountComponent('.0')
-    // var content = '<div data-reactid=".0">' +
-                    // '<div data-reactid=".0.0">' +
-                      // '<p data-reactid=".0.0.0"></p>' +
-                      // '<div data-reactid=".0.0.1"></div>' +
-                    // '</div>' +
-                  // '</div>'
-    // expect(markup).toEqual(content)
-  // })
-// })
+    var markup = component.mountComponent('.0')
+    var content = '<div data-reactid=".0">' +
+                    '<div data-reactid=".0.0">' +
+                      '<p data-reactid=".0.0.0"></p>' +
+                      '<div data-reactid=".0.0.1"></div>' +
+                    '</div>' +
+                  '</div>'
+    expect(markup).toEqual(content)
+  })
+})
 
-// describe('ReactCompositeComponent.mountComponent', function() {
-  // it('creates rendered components with custom component instance', function() {
-    // var div = React.DOM.div
-    // var App = React.createClass({
-      // render: function() {
-        // return div(null, [
-          // 'test'
-        // ])
-      // }
-    // })
+describe('ReactCompositeComponent.mountComponent', function() {
+  it('creates rendered components with custom component instance', function() {
+    var div = React.DOM.div
+    var App = React.createClass({
+      render: function() {
+        return div(null, [
+          'test'
+        ])
+      }
+    })
 
-    // var element = React.createElement(App, { className: 'bar' }, null)
-    // var component = React.instantiateReactComponent(element)
+    var element = React.createElement(App, { className: 'bar' }, null)
+    var component = React.instantiateReactComponent(element)
 
-    // var markup = component.mountComponent('.0')
+    var markup = component.mountComponent('.0')
 
-    // expect(component._rootID).toEqual('.0')
-    // expect(markup).toEqual('<div data-reactid=".0">' +
-                             // '<span data-reactid=".0.0">test</span>' +
-                           // '</div>')
-  // })
-// })
+    expect(component._rootID).toEqual('.0')
+    expect(markup).toEqual('<div data-reactid=".0">' +
+                             '<span data-reactid=".0.0">test</span>' +
+                           '</div>')
+  })
+})
 
 // // step 6: let's render!
 

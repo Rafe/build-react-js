@@ -23,12 +23,67 @@ var ReactDOMTextComponent = function(text) {
   this._currentElement = text
 }
 
+ReactDOMTextComponent.prototype.mountComponent = function(rootID) {
+  this._rootID = rootID
+  return ('<span data-reactid="' + rootID + '">' + this._currentElement + '</span>')
+}
+
 var ReactCompositeComponent = function(element) {
   this._currentElement = element
 }
 
+ReactCompositeComponent.prototype.mountComponent = function(rootID) {
+  this._rootID = rootID
+
+  var instance = new this._currentElement.type(this._currentElement.props, this)
+
+  var renderedElement = instance.render()
+
+  this._renderedComponent = instantiateReactComponent(renderedElement)
+
+  return this._renderedComponent.mountComponent(rootID)
+}
+
 var ReactDOMComponent = function(element) {
   this._currentElement = element
+}
+
+ReactDOMComponent.prototype.mountComponent = function(rootID) {
+  this._rootID = rootID
+
+  var props = this._currentElement.props
+
+  var tagOpen = '<' +
+    this._currentElement.type +
+    this.createMarkupForStyles(props) +
+    ' data-reactid="' + this._rootID + '"' +
+    '>'
+
+  var tagClose = '</' + this._currentElement.type + '>'
+
+  if(props.children) {
+    this._renderedComponents = props.children.map(function(element){
+      return instantiateReactComponent(element)
+    })
+
+    var subIndex = 0
+    var tagContent = this._renderedComponents.map(function(component) {
+      var nextID = rootID + '.' + subIndex++
+      return component.mountComponent(nextID)
+    }).join('')
+  } else {
+    var tagContent = ''
+  }
+
+  return tagOpen + tagContent + tagClose
+}
+
+ReactDOMComponent.prototype.createMarkupForStyles = function(props) {
+  if(props.className) {
+    return ' class="' + props.className + '"'
+  } else {
+    return ''
+  }
 }
 
 function instantiateReactComponent(node) {
