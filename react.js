@@ -43,9 +43,31 @@ function instantiateReactComponent(node) {
   }
 }
 
+function createClass(spec) {
+  var Constructor = function(props, updater) {
+    this.props = props
+    this.state = this.getInitialState ? this.getInitialState() : null
+    this.updater = updater
+
+    var self = this
+
+    this.setState = function(states) {
+      for (name in states) {
+        self.state[name] = states[name]
+      }
+
+      self.updater.receiveComponent(self.render())
+    }
+  }
+  Constructor.prototype = spec
+
+  return Constructor
+}
+
 var React = {
   createElement: createElement,
   DOM: DOM,
+  createClass: createClass,
 
   // for testing purpose
   ReactDOMTextComponent: ReactDOMTextComponent,

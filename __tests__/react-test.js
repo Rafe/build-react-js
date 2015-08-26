@@ -93,25 +93,25 @@ describe('instantiateReactComponent', function() {
   })
 })
 
-// // step 4: let's create class!
+// step 4: let's create class!
 
-// describe('React.createClass', function() {
-  // it("creates a public component with state", function() {
-    // var Component = React.createClass({
-      // render: function() {
-        // return React.DOM.div(null, null)
-      // },
-      // getInitialState: function() {
-        // return { baz: 'qaz'}
-      // }
-    // })
+describe('React.createClass', function() {
+  it("creates a public component with state", function() {
+    var Component = React.createClass({
+      render: function() {
+        return React.DOM.div(null, null)
+      },
+      getInitialState: function() {
+        return { baz: 'qaz'}
+      }
+    })
 
-    // var component = new Component({foo: 'bar'})
-    // expect(component.render().type).toEqual('div')
-    // expect(component.props.foo).toEqual('bar')
-    // expect(component.state.baz).toEqual('qaz')
-  // });
-// })
+    var component = new Component({foo: 'bar'})
+    expect(component.render().type).toEqual('div')
+    expect(component.props.foo).toEqual('bar')
+    expect(component.state.baz).toEqual('qaz')
+  });
+})
 
 // // step 5: let's mount Components!
 
