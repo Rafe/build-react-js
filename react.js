@@ -71,20 +71,24 @@ ReactDOMComponent.prototype.mountComponent = function(rootID) {
     '>'
 
   if(props.onClick) {
-    EventEmitter.putListener(rootID, 'onClick', props.onClick)
+    ReactEventEmitter.putListener(rootID, 'onClick', props.onClick)
   }
 
   var tagClose = '</' + this._currentElement.type + '>'
 
-  this._renderedComponents = props.children.map(function(element){
-    return instantiateReactComponent(element)
-  })
+  if(props.children) {
+    this._renderedComponents = props.children.map(function(element){
+      return instantiateReactComponent(element)
+    })
 
-  var subIndex = 0
-  var tagContent = this._renderedComponents.map(function(component) {
-    var nextID = rootID + '.' + subIndex++
-    return component.mountComponent(nextID)
-  }).join('')
+    var subIndex = 0
+    var tagContent = this._renderedComponents.map(function(component) {
+      var nextID = rootID + '.' + subIndex++
+      return component.mountComponent(nextID)
+    }).join('')
+  } else {
+    var tagContent = ''
+  }
 
   return tagOpen + tagContent + tagClose
 }
@@ -109,7 +113,7 @@ function shouldUpdateReactComponent(prevComponent, nextElement) {
 
 ReactDOMComponent.prototype.createMarkupForStyles = function(props) {
   if(props.className) {
-    return ' class=' + props.className + ' '
+    return ' class="' + props.className + '"'
   } else {
     return ''
   }
@@ -149,7 +153,7 @@ function createClass(spec) {
 }
 
 // diagram in ReactBrowserEventEmitter
-var EventEmitter = {
+var ReactEventEmitter = {
   listenerBank: {},
 
   putListener: function putListener(id, registrationName, listener) {
@@ -161,32 +165,34 @@ var EventEmitter = {
 
   getListener: function getListener(id, registrationName) {
     return this.listenerBank[registrationName][id]
+  },
+
+  trapBubbledEvent: function trapBubbledEvent(topLevelEventType, element) {
+    var eventMap = {
+      'onClick': 'click'
+    }
+    var baseEventType = eventMap[topLevelEventType]
+    element.addEventListener(baseEventType, this.dispatchEvent.bind(this, topLevelEventType))
+  },
+
+  dispatchEvent: function dispatchEvent(eventType, event) {
+    event.preventDefault()
+    var id = event.target.getAttribute('data-reactid')
+    var listener = this.getListener(id, eventType)
+    if(listener) {
+      listener(event)
+    }
   }
 }
 
-function trapBubbledEvent(topLevelEventType, element) {
-  var eventMap = {
-    'onClick': 'click'
-  }
-  var baseEventType = eventMap[topLevelEventType]
-  element.addEventListener(baseEventType, dispatchEvent.bind(null, topLevelEventType))
-}
 
-function dispatchEvent(eventType, event) {
-  event.preventDefault()
-  var id = event.target.getAttribute('data-reactid')
-  var listener = EventEmitter.getListener(id, eventType)
-  if(listener) {
-    listener(event)
-  }
-}
 
-// return reactRootID
 var instancesByReactRootID = {}
-var rootContainer;
+var containersByReactRootID = {};
 function registerComponent(component, container) {
   var reactRootID = getRootIDString(container)
   instancesByReactRootID[reactRootID] = component
+  containersByReactRootID[reactRootID] = container
   return reactRootID
 }
 
@@ -199,25 +205,26 @@ function getNode(targetID) {
   var sequenceID = targetID.split('.')
   sequenceID.shift()
 
-  var child = rootContainer
+  var child = containersByReactRootID[targetID.slice(0, 2)]
   while(child) {
     var id = child.getAttribute('data-reactid')
     if (id === targetID) {
       return child
-    } else {
+    } else if(child.children){
       child = child.children[sequenceID.shift()]
+    } else {
+      child = null
     }
   }
 }
 
 function render(element, container) {
-  rootContainer = container
 
   var topComponent = instantiateReactComponent(element)
 
   var reactRootID = registerComponent(topComponent, container)
 
-  trapBubbledEvent('onClick', container)
+  ReactEventEmitter.trapBubbledEvent('onClick', container)
 
   container.innerHTML = topComponent.mountComponent(reactRootID)
 }
@@ -228,8 +235,17 @@ var React = {
   createClass: createClass,
   render: render,
   getNode: getNode,
+
+  // for testing purpose
+  ReactDOMTextComponent: ReactDOMTextComponent,
+  ReactDOMComponent: ReactDOMComponent,
+  ReactCompositeComponent: ReactCompositeComponent,
+  instantiateReactComponent: instantiateReactComponent,
+  instancesByReactRootID: instancesByReactRootID,
+  containersByReactRootID: containersByReactRootID,
+  ReactEventEmitter: ReactEventEmitter,
 }
 
-if(!window) {
+if(typeof module !== 'undefined') {
   module.exports = React
 }
