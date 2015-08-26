@@ -28,6 +28,13 @@ ReactDOMTextComponent.prototype.mountComponent = function(rootID) {
   return ('<span data-reactid="' + rootID + '">' + this._currentElement + '</span>')
 }
 
+ReactDOMTextComponent.prototype.receiveComponent = function(nextText) {
+  if(this._currentElement != nextText) {
+    var node = React.getNode(this._rootID)
+    node.innerHTML = nextText
+  }
+}
+
 var ReactCompositeComponent = function(element) {
   this._currentElement = element
 }
@@ -42,6 +49,10 @@ ReactCompositeComponent.prototype.mountComponent = function(rootID) {
   this._renderedComponent = instantiateReactComponent(renderedElement)
 
   return this._renderedComponent.mountComponent(rootID)
+}
+
+ReactCompositeComponent.prototype.receiveComponent = function(nextElement) {
+  this._renderedComponent.receiveComponent(nextElement)
 }
 
 var ReactDOMComponent = function(element) {
@@ -80,6 +91,24 @@ ReactDOMComponent.prototype.mountComponent = function(rootID) {
   }
 
   return tagOpen + tagContent + tagClose
+}
+
+ReactDOMComponent.prototype.receiveComponent = function(nextElement) {
+  this._currentElement = nextElement
+
+  var nextChildren = nextElement.props.children || []
+
+  for(var i = 0; nextChildren.length > i; i++) {
+    var childElement = nextChildren[i]
+    var childComponent = this._renderedComponents[i]
+    if (shouldUpdateReactComponent(childComponent, nextElement)) {
+      childComponent.receiveComponent(childElement)
+    }
+  }
+}
+
+function shouldUpdateReactComponent(prevComponent, nextElement) {
+  return true
 }
 
 ReactDOMComponent.prototype.createMarkupForStyles = function(props) {

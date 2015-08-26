@@ -253,7 +253,7 @@ describe('React.getNode', function() {
   })
 })
 
-// // step 8: let's capture event!
+// step 8: let's capture event!
 
 /* Overview of React and the event system:
  *
@@ -346,51 +346,51 @@ describe('React.ReactEventEmitter', function() {
   })
 })
 
-// // step 9: let's update!
+// step 9: let's update!
 
-// describe('React.ReactDOMTextComponent.receiveComponent', function() {
-  // it('updates inner text', function() {
-    // var component = React.instantiateReactComponent('text')
-    // var node = { innerHTML: 'text' }
+describe('React.ReactDOMTextComponent.receiveComponent', function() {
+  it('updates inner text', function() {
+    var component = React.instantiateReactComponent('text')
+    var node = { innerHTML: 'text' }
 
-    // spyOn(React, 'getNode').andReturn(node)
+    spyOn(React, 'getNode').andReturn(node)
 
-    // component.mountComponent('0.0.1')
-    // component.receiveComponent('foobar')
-    // expect(React.getNode).toHaveBeenCalledWith('0.0.1')
-    // expect(node.innerHTML).toEqual('foobar')
-  // })
-// })
+    component.mountComponent('0.0.1')
+    component.receiveComponent('foobar')
+    expect(React.getNode).toHaveBeenCalledWith('0.0.1')
+    expect(node.innerHTML).toEqual('foobar')
+  })
+})
 
-// describe('React.ReactCompositeComponent.receiveComponent', function() {
-  // var App = React.createClass({
-    // render: function() {
-      // return React.DOM.div(null, null)
-    // }
-  // })
+describe('React.ReactCompositeComponent.receiveComponent', function() {
+  var App = React.createClass({
+    render: function() {
+      return React.DOM.div(null, null)
+    }
+  })
 
-  // var component = React.instantiateReactComponent(React.createElement(App, null, null))
-  // component._renderedComponent = jasmine.createSpyObj('component', ['receiveComponent'])
-  // component.receiveComponent(React.DOM.div(null, ['test']))
-  // expect(component._renderedComponent.receiveComponent).toHaveBeenCalled()
-// })
+  var component = React.instantiateReactComponent(React.createElement(App, null, null))
+  component._renderedComponent = jasmine.createSpyObj('component', ['receiveComponent'])
+  component.receiveComponent(React.DOM.div(null, ['test']))
+  expect(component._renderedComponent.receiveComponent).toHaveBeenCalled()
+})
 
-// describe('React.ReactDOMComponent.receiveComponent', function() {
-  // it('update the dom element and subtree', function() {
-    // var tree = React.DOM.div(null, [
-      // React.DOM.div(null, null),
-      // React.DOM.div(null, null),
-    // ])
+describe('React.ReactDOMComponent.receiveComponent', function() {
+  it('update the dom element and subtree', function() {
+    var tree = React.DOM.div(null, [
+      React.DOM.div(null, null),
+      React.DOM.div(null, null),
+    ])
 
-    // var component = React.instantiateReactComponent(tree)
-    // var mockComponent1 = jasmine.createSpyObj('component', ['receiveComponent'])
-    // var mockComponent2 = jasmine.createSpyObj('component', ['receiveComponent'])
-    // component._renderedComponents = [ mockComponent1, mockComponent2 ]
-    // component.receiveComponent(tree)
-    // expect(mockComponent1.receiveComponent).toHaveBeenCalled()
-    // expect(mockComponent2.receiveComponent).toHaveBeenCalled()
-  // })
-// })
+    var component = React.instantiateReactComponent(tree)
+    var mockComponent1 = jasmine.createSpyObj('component', ['receiveComponent'])
+    var mockComponent2 = jasmine.createSpyObj('component', ['receiveComponent'])
+    component._renderedComponents = [ mockComponent1, mockComponent2 ]
+    component.receiveComponent(tree)
+    expect(mockComponent1.receiveComponent).toHaveBeenCalled()
+    expect(mockComponent2.receiveComponent).toHaveBeenCalled()
+  })
+})
 
 // extra:
 // step 10: let's lifecycle!
