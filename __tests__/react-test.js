@@ -53,45 +53,45 @@ describe('React.DOM', function() {
 
 // // step 3: let's create Components!
 
-// describe('ReactDOMTextComponent', function() {
-  // it('creates component with element', function() {
-    // var component = new React.ReactDOMTextComponent('test')
-    // expect(component._currentElement).toEqual('test')
-  // })
-// })
+describe('ReactDOMTextComponent', function() {
+  it('creates component with element', function() {
+    var component = new React.ReactDOMTextComponent('test')
+    expect(component._currentElement).toEqual('test')
+  })
+})
 
-// describe('ReactDOMComponent', function() {
-  // it('creates component with element', function() {
-    // var element = React.DOM.div(null, null)
-    // var component = new React.ReactDOMComponent(element)
-    // expect(component._currentElement).toEqual(element)
-  // })
-// })
+describe('ReactDOMComponent', function() {
+  it('creates component with element', function() {
+    var element = React.DOM.div(null, null)
+    var component = new React.ReactDOMComponent(element)
+    expect(component._currentElement).toEqual(element)
+  })
+})
 
-// describe('ReactCompositeComponent', function() {
-  // it('creates component with custom element', function() {
-    // var element = function() {}
-    // var component = new React.ReactCompositeComponent(element)
-    // expect(component._currentElement).toEqual(element)
-  // })
-// })
+describe('ReactCompositeComponent', function() {
+  it('creates component with custom element', function() {
+    var element = function() {}
+    var component = new React.ReactCompositeComponent(element)
+    expect(component._currentElement).toEqual(element)
+  })
+})
 
-// describe('instantiateReactComponent', function() {
-  // it('instantiate component with different element types', function() {
-    // var component
+describe('instantiateReactComponent', function() {
+  it('instantiate component with different element types', function() {
+    var component
 
-    // component = React.instantiateReactComponent('test')
-    // expect(component.constructor).toEqual(React.ReactDOMTextComponent)
+    component = React.instantiateReactComponent('test')
+    expect(component.constructor).toEqual(React.ReactDOMTextComponent)
 
-    // component = React.instantiateReactComponent(React.DOM.div(null, null))
-    // expect(component.constructor).toEqual(React.ReactDOMComponent)
+    component = React.instantiateReactComponent(React.DOM.div(null, null))
+    expect(component.constructor).toEqual(React.ReactDOMComponent)
 
-    // component = React.instantiateReactComponent(
-      // React.createElement(function() {}, null, null)
-    // )
-    // expect(component.constructor).toEqual(React.ReactCompositeComponent)
-  // })
-// })
+    component = React.instantiateReactComponent(
+      React.createElement(function() {}, null, null)
+    )
+    expect(component.constructor).toEqual(React.ReactCompositeComponent)
+  })
+})
 
 // // step 4: let's create class!
 
