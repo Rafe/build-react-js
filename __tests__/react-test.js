@@ -222,36 +222,36 @@ describe('React.render', function() {
   })
 })
 
-// // step 7: let's getNode by ReactID!
+// step 7: let's getNode by ReactID!
 
-// describe('React.getNode', function() {
-  // it('can find the node by react id', function() {
-    // var container = {
-      // getAttribute: function() {},
-      // children: [{
-        // getAttribute: function(attribute) {
-          // return '.0'
-        // },
-        // children: [{
-            // getAttribute: function(attribute) {
-              // return '.0.0'
-            // },
-          // }, {
-            // isTarget: true,
-            // getAttribute: function(attribute) {
-              // return '.0.1'
-          // },
-        // }]
-      // }]
-    // }
+describe('React.getNode', function() {
+  it('can find the node by react id', function() {
+    var container = {
+      getAttribute: function() {},
+      children: [{
+        getAttribute: function(attribute) {
+          return '.0'
+        },
+        children: [{
+            getAttribute: function(attribute) {
+              return '.0.0'
+            },
+          }, {
+            isTarget: true,
+            getAttribute: function(attribute) {
+              return '.0.1'
+          },
+        }]
+      }]
+    }
 
-    // React.containersByReactRootID['.0'] = container
+    React.containersByReactRootID['.0'] = container
 
-    // var node = React.getNode('.0.1')
+    var node = React.getNode('.0.1')
 
-    // expect(node.isTarget).toEqual(true)
-  // })
-// })
+    expect(node.isTarget).toEqual(true)
+  })
+})
 
 // // step 8: let's capture event!
 

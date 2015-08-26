@@ -164,6 +164,7 @@ var React = {
   DOM: DOM,
   createClass: createClass,
   render: render,
+  getNode: getNode,
 
   // for testing purpose
   ReactDOMTextComponent: ReactDOMTextComponent,
