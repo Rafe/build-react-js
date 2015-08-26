@@ -60,6 +60,10 @@ ReactDOMComponent.prototype.mountComponent = function(rootID) {
     ' data-reactid="' + this._rootID + '"' +
     '>'
 
+  if(props.onClick) {
+    EventEmitter.putListener(rootID, 'onClick', props.onClick)
+  }
+
   var tagClose = '</' + this._currentElement.type + '>'
 
   this._renderedComponents = props.children.map(function(element){
@@ -69,7 +73,6 @@ ReactDOMComponent.prototype.mountComponent = function(rootID) {
   var subIndex = 0
   var tagContent = this._renderedComponents.map(function(component) {
     var nextID = rootID + '.' + subIndex++
-    debugger;
     return component.mountComponent(nextID)
   }).join('')
 
@@ -101,18 +104,85 @@ function createClass(spec) {
   var Constructor = function(props) {
     this.props = props
     this.state = this.getInitialState ? this.getInitialState() : null
+
+    var self = this
+    this.setState = function(states) {
+      for (name in states) {
+        self.state[name] = states[name]
+      }
+    }
   }
   Constructor.prototype = spec
 
   return Constructor
 }
 
-function render(element, container) {
-  var topComponent = instantiateReactComponent(element)
+/* Overview of React and the event system:
+ *
+ * +------------+    .
+ * |    DOM     |    .
+ * +------------+    .
+ *       |           .
+ *       v           .
+ * +------------+    .
+ * | ReactEvent |    .
+ * |  Listener  |    .
+ * +------------+    .                         +-----------+
+ *       |           .               +--------+|SimpleEvent|
+ *       |           .               |         |Plugin     |
+ * +-----|------+    .               v         +-----------+
+ * |     |      |    .    +--------------+                    +------------+
+ * |     +-----------.--->|EventPluginHub|                    |    Event   |
+ * |            |    .    |              |     +-----------+  | Propagators|
+ * | ReactEvent |    .    |              |     |TapEvent   |  |------------|
+ * |  Emitter   |    .    |              |<---+|Plugin     |  |other plugin|
+ * |            |    .    |              |     +-----------+  |  utilities |
+ * |     +-----------.--->|              |                    +------------+
+ * |     |      |    .    +--------------+
+ * +-----|------+    .                ^        +-----------+
+ *       |           .                |        |Enter/Leave|
+ *       +           .                +-------+|Plugin     |
+ * +-------------+   .                         +-----------+
+ * | application |   .
+ * |-------------|   .
+ * |             |   .
+ * |             |   .
+ * +-------------+   .
+ */
 
-  var reactRootID = registerComponent(topComponent, container)
+// diagram in ReactBrowserEventEmitter
 
-  container.innerHTML = topComponent.mountComponent(reactRootID)
+var EventEmitter = {
+  listenerBank: {},
+
+  putListener: function putListener(id, registrationName, listener) {
+    var bankForRegistrationName =
+      this.listenerBank[registrationName] || (this.listenerBank[registrationName] = {})
+
+    bankForRegistrationName[id] = listener
+  },
+
+  getListener: function getListener(id, registrationName) {
+    return this.listenerBank[registrationName][id]
+  }
+}
+
+function trapBubbledEvent(topLevelEventType, element) {
+  var eventMap = {
+    'onClick': 'click'
+  }
+  var baseEventType = eventMap[topLevelEventType]
+  element.addEventListener(baseEventType, dispatchEvent.bind(null, topLevelEventType))
+}
+
+function dispatchEvent(eventType, event) {
+  event.preventDefault()
+  var id = event.target.getAttribute('data-reactid')
+  var listeners = EventEmitter.getListener(id, eventType)
+  for(var i = 0; i < listeners.length; i++) {
+    var listener = listeners[i]
+    listener(event)
+  }
 }
 
 // return reactRootID
@@ -128,6 +198,17 @@ function getRootIDString(container) {
   return '.' + containerIndex++
 }
 
+function render(element, container) {
+  var topComponent = instantiateReactComponent(element)
+
+  var reactRootID = registerComponent(topComponent, container)
+
+  trapBubbledEvent('onClick', container)
+
+  container.innerHTML = topComponent.mountComponent(reactRootID)
+}
+
+
 var React = {
   createElement: createElement,
   DOM: DOM,
@@ -135,4 +216,6 @@ var React = {
   render: render,
 }
 
-module.exports = React
+if(!window) {
+  module.exports = React
+}
