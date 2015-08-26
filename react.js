@@ -59,6 +59,10 @@ ReactDOMComponent.prototype.mountComponent = function(rootID) {
     ' data-reactid="' + this._rootID + '"' +
     '>'
 
+  if(props.onClick) {
+    ReactEventEmitter.putListener(rootID, 'onClick', props.onClick)
+  }
+
   var tagClose = '</' + this._currentElement.type + '>'
 
   if(props.children) {
@@ -119,6 +123,41 @@ function createClass(spec) {
   return Constructor
 }
 
+// diagram in ReactBrowserEventEmitter
+var ReactEventEmitter = {
+  listenerBank: {},
+
+  putListener: function putListener(id, registrationName, listener) {
+    var bankForRegistrationName =
+      this.listenerBank[registrationName] || (this.listenerBank[registrationName] = {})
+
+    bankForRegistrationName[id] = listener
+  },
+
+  getListener: function getListener(id, registrationName) {
+    return this.listenerBank[registrationName][id]
+  },
+
+  trapBubbledEvent: function trapBubbledEvent(topLevelEventType, element) {
+    var eventMap = {
+      'onClick': 'click'
+    }
+    var baseEventType = eventMap[topLevelEventType]
+    element.addEventListener(baseEventType, this.dispatchEvent.bind(this, topLevelEventType))
+  },
+
+  dispatchEvent: function dispatchEvent(eventType, event) {
+    event.preventDefault()
+    var id = event.target.getAttribute('data-reactid')
+    var listener = this.getListener(id, eventType)
+    if(listener) {
+      listener(event)
+    }
+  }
+}
+
+
+
 var instancesByReactRootID = {}
 var containersByReactRootID = {};
 function registerComponent(component, container) {
@@ -156,6 +195,8 @@ function render(element, container) {
 
   var reactRootID = registerComponent(topComponent, container)
 
+  ReactEventEmitter.trapBubbledEvent('onClick', container)
+
   container.innerHTML = topComponent.mountComponent(reactRootID)
 }
 
@@ -173,6 +214,7 @@ var React = {
   instantiateReactComponent: instantiateReactComponent,
   instancesByReactRootID: instancesByReactRootID,
   containersByReactRootID: containersByReactRootID,
+  ReactEventEmitter: ReactEventEmitter,
 }
 
 if(typeof module !== 'undefined') {

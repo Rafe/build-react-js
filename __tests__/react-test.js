@@ -290,40 +290,61 @@ describe('React.getNode', function() {
  *    React Core     .  General Purpose Event Plugin System
  */
 
-// describe('React.ReactEventEmitter', function() {
-  // it('register listeners', function() {
-    // React.ReactEventEmitter.putListener('0.1.1', 'onClick', 'listener')
-    // expect(React.ReactEventEmitter.getListener('0.1.1', 'onClick')).toEqual('listener')
-  // })
+describe('React.ReactEventEmitter', function() {
+  it('register listeners', function() {
+    React.ReactEventEmitter.putListener('0.1.1', 'onClick', 'listener')
+    expect(React.ReactEventEmitter.getListener('0.1.1', 'onClick')).toEqual('listener')
+  })
 
-  // describe('trapBubbledEvent', function() {
-    // it('capture event on top level', function() {
-      // var listener = jasmine.createSpy('listner')
+  describe('trapBubbledEvent', function() {
+    it('capture event on top level', function() {
+      var listener = jasmine.createSpy('listner')
 
-      // React.ReactEventEmitter.putListener('0.1.1', 'onClick', listener)
+      React.ReactEventEmitter.putListener('0.1.1', 'onClick', listener)
 
-      // var element = {
-        // addEventListener: function(type, dispatcher) {
-          // var event = {
-            // preventDefault: jest.genMockFunction(),
-            // target: {
-              // getAttribute: function() {
-                // return '0.1.1'
-              // }
-            // }
-          // }
-          // dispatcher(event)
-        // }
-      // }
-      // spyOn(element, 'addEventListener').andCallThrough()
+      var element = {
+        addEventListener: function(type, dispatcher) {
+          var event = {
+            preventDefault: jest.genMockFunction(),
+            target: {
+              getAttribute: function() {
+                return '0.1.1'
+              }
+            }
+          }
+          dispatcher(event)
+        }
+      }
+      spyOn(element, 'addEventListener').andCallThrough()
 
-      // React.ReactEventEmitter.trapBubbledEvent('onClick', element)
+      React.ReactEventEmitter.trapBubbledEvent('onClick', element)
 
-      // expect(element.addEventListener).toHaveBeenCalledWith('click', jasmine.any)
-      // expect(listener).toHaveBeenCalled()
-    // })
-  // })
-// })
+      expect(element.addEventListener).toHaveBeenCalledWith('click', jasmine.any)
+      expect(listener).toHaveBeenCalled()
+    })
+  })
+
+  describe('React.render', function() {
+    it('traps event when render', function() {
+      spyOn(React.ReactEventEmitter, 'trapBubbledEvent')
+      var element = React.createElement('div', { className: 'bar' }, null)
+      React.render(element, {})
+      expect(React.ReactEventEmitter.trapBubbledEvent).toHaveBeenCalled()
+    })
+  })
+
+  describe('ReactDOMComponent.mountComponent', function() {
+    it('traps onClick event', function() {
+      var func = jasmine.createSpy('func')
+      var element = React.DOM.div({ 'onClick': func }, null)
+      var component = React.instantiateReactComponent(element)
+
+      component.mountComponent('.0.1')
+
+      expect(React.ReactEventEmitter.getListener('.0.1', 'onClick')).toEqual(func)
+    })
+  })
+})
 
 // // step 9: let's update!
 
