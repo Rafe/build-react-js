@@ -24,34 +24,40 @@ var ReactDOMTextComponent = function(text) {
   this._currentElement = text
 }
 
-ReactDOMTextComponent.prototype.mountComponent = function() {
-  return ('<span>' + this._currentElement + '</span>')
+ReactDOMTextComponent.prototype.mountComponent = function(rootID) {
+  this._rootID = rootID
+  return ('<span data-reactid="' + rootID + '">' + this._currentElement + '</span>')
 }
 
 var ReactCompositeComponent = function(element) {
   this._currentElement = element
 }
 
-ReactCompositeComponent.prototype.mountComponent = function() {
+ReactCompositeComponent.prototype.mountComponent = function(rootID) {
+  this._rootID = rootID
+
   var instance = new this._currentElement.type()
 
   var renderedElement = instance.render()
 
   this._renderedComponent = instantiateReactComponent(renderedElement)
 
-  return this._renderedComponent.mountComponent()
+  return this._renderedComponent.mountComponent(rootID)
 }
 
 var ReactDOMComponent = function(element) {
   this._currentElement = element
 }
 
-ReactDOMComponent.prototype.mountComponent = function() {
+ReactDOMComponent.prototype.mountComponent = function(rootID) {
+  this._rootID = rootID
+
   var props = this._currentElement.props
 
   var tagOpen = '<' +
     this._currentElement.type +
     this.createMarkupForStyles(props) +
+    ' data-reactid="' + this._rootID + '"' +
     '>'
 
   var tagClose = '</' + this._currentElement.type + '>'
@@ -60,8 +66,11 @@ ReactDOMComponent.prototype.mountComponent = function() {
     return instantiateReactComponent(element)
   })
 
+  var subIndex = 0
   var tagContent = this._renderedComponents.map(function(component) {
-    return component.mountComponent()
+    var nextID = rootID + '.' + subIndex++
+    debugger;
+    return component.mountComponent(nextID)
   }).join('')
 
   return tagOpen + tagContent + tagClose
@@ -100,7 +109,23 @@ function createClass(spec) {
 
 function render(element, container) {
   var topComponent = instantiateReactComponent(element)
-  container.innerHTML = topComponent.mountComponent()
+
+  var reactRootID = registerComponent(topComponent, container)
+
+  container.innerHTML = topComponent.mountComponent(reactRootID)
+}
+
+// return reactRootID
+var instancesByReactRootID = {}
+function registerComponent(component, container) {
+  var reactRootID = getRootIDString(container)
+  instancesByReactRootID[reactRootID] = component
+  return reactRootID
+}
+
+var containerIndex = 0
+function getRootIDString(container) {
+  return '.' + containerIndex++
 }
 
 var React = {
