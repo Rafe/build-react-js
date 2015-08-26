@@ -19,7 +19,6 @@ var DOM = {};
 })
 
 // ReactCompositeComponent ,ReactDOMComponent, ReactDOMTextComponent
-
 var ReactDOMTextComponent = function(text) {
   this._currentElement = text
 }
@@ -43,13 +42,17 @@ var ReactCompositeComponent = function(element) {
 ReactCompositeComponent.prototype.mountComponent = function(rootID) {
   this._rootID = rootID
 
-  var instance = new this._currentElement.type()
+  var instance = new this._currentElement.type(this._currentElement.props, this)
 
   var renderedElement = instance.render()
 
   this._renderedComponent = instantiateReactComponent(renderedElement)
 
   return this._renderedComponent.mountComponent(rootID)
+}
+
+ReactCompositeComponent.prototype.receiveComponent = function(nextElement) {
+  this._renderedComponent.receiveComponent(nextElement)
 }
 
 var ReactDOMComponent = function(element) {
@@ -86,6 +89,24 @@ ReactDOMComponent.prototype.mountComponent = function(rootID) {
   return tagOpen + tagContent + tagClose
 }
 
+ReactDOMComponent.prototype.receiveComponent = function(nextElement) {
+  this._currentElement = nextElement
+
+  var nextChildren = nextElement.props.children || []
+
+  for(var i = 0; nextChildren.length > i; i++) {
+    var childElement = nextChildren[i]
+    var childComponent = this._renderedComponents[i]
+    if (shouldUpdateReactComponent(childComponent, nextElement)) {
+      childComponent.receiveComponent(childElement)
+    }
+  }
+}
+
+function shouldUpdateReactComponent(prevComponent, nextElement) {
+  return true
+}
+
 ReactDOMComponent.prototype.createMarkupForStyles = function(props) {
   if(props.className) {
     return ' class=' + props.className + ' '
@@ -107,15 +128,19 @@ function instantiateReactComponent(node) {
 }
 
 function createClass(spec) {
-  var Constructor = function(props) {
+  var Constructor = function(props, updater) {
     this.props = props
     this.state = this.getInitialState ? this.getInitialState() : null
+    this.updater = updater
 
     var self = this
+
     this.setState = function(states) {
       for (name in states) {
         self.state[name] = states[name]
       }
+
+      self.updater.receiveComponent(self.render())
     }
   }
   Constructor.prototype = spec
@@ -123,41 +148,7 @@ function createClass(spec) {
   return Constructor
 }
 
-/* Overview of React and the event system:
- *
- * +------------+    .
- * |    DOM     |    .
- * +------------+    .
- *       |           .
- *       v           .
- * +------------+    .
- * | ReactEvent |    .
- * |  Listener  |    .
- * +------------+    .                         +-----------+
- *       |           .               +--------+|SimpleEvent|
- *       |           .               |         |Plugin     |
- * +-----|------+    .               v         +-----------+
- * |     |      |    .    +--------------+                    +------------+
- * |     +-----------.--->|EventPluginHub|                    |    Event   |
- * |            |    .    |              |     +-----------+  | Propagators|
- * | ReactEvent |    .    |              |     |TapEvent   |  |------------|
- * |  Emitter   |    .    |              |<---+|Plugin     |  |other plugin|
- * |            |    .    |              |     +-----------+  |  utilities |
- * |     +-----------.--->|              |                    +------------+
- * |     |      |    .    +--------------+
- * +-----|------+    .                ^        +-----------+
- *       |           .                |        |Enter/Leave|
- *       +           .                +-------+|Plugin     |
- * +-------------+   .                         +-----------+
- * | application |   .
- * |-------------|   .
- * |             |   .
- * |             |   .
- * +-------------+   .
- */
-
 // diagram in ReactBrowserEventEmitter
-
 var EventEmitter = {
   listenerBank: {},
 
@@ -184,9 +175,8 @@ function trapBubbledEvent(topLevelEventType, element) {
 function dispatchEvent(eventType, event) {
   event.preventDefault()
   var id = event.target.getAttribute('data-reactid')
-  var listeners = EventEmitter.getListener(id, eventType)
-  for(var i = 0; i < listeners.length; i++) {
-    var listener = listeners[i]
+  var listener = EventEmitter.getListener(id, eventType)
+  if(listener) {
     listener(event)
   }
 }
@@ -206,10 +196,10 @@ function getRootIDString(container) {
 }
 
 function getNode(targetID) {
-  var child = rootContainer.firstChild
-
   var sequenceID = targetID.split('.')
   sequenceID.shift()
+
+  var child = rootContainer
   while(child) {
     var id = child.getAttribute('data-reactid')
     if (id === targetID) {

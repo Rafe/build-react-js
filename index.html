@@ -38,7 +38,7 @@
               DOM.p(null, ["Watchout for what React you're using... it might not be real!"]),
               DOM.p(null, ["React is running for " + this.state.timestamp + "ms"])
             ]),
-            DOM.a({ className: 'button', onClick: this.handleClick }, ["Click me!!!"])
+            DOM.a({ className: 'button', onClick: this.handleClick.bind(this) }, ["Click me!!!"])
           ])
         }
       })
