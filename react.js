@@ -119,16 +119,59 @@ function createClass(spec) {
   return Constructor
 }
 
+var instancesByReactRootID = {}
+var containersByReactRootID = {};
+function registerComponent(component, container) {
+  var reactRootID = getRootIDString(container)
+  instancesByReactRootID[reactRootID] = component
+  containersByReactRootID[reactRootID] = container
+  return reactRootID
+}
+
+var containerIndex = 0
+function getRootIDString(container) {
+  return '.' + containerIndex++
+}
+
+function getNode(targetID) {
+  var sequenceID = targetID.split('.')
+  sequenceID.shift()
+
+  var child = containersByReactRootID[targetID.slice(0, 2)]
+  while(child) {
+    var id = child.getAttribute('data-reactid')
+    if (id === targetID) {
+      return child
+    } else if(child.children){
+      child = child.children[sequenceID.shift()]
+    } else {
+      child = null
+    }
+  }
+}
+
+function render(element, container) {
+
+  var topComponent = instantiateReactComponent(element)
+
+  var reactRootID = registerComponent(topComponent, container)
+
+  container.innerHTML = topComponent.mountComponent(reactRootID)
+}
+
 var React = {
   createElement: createElement,
   DOM: DOM,
   createClass: createClass,
+  render: render,
 
   // for testing purpose
   ReactDOMTextComponent: ReactDOMTextComponent,
   ReactDOMComponent: ReactDOMComponent,
   ReactCompositeComponent: ReactCompositeComponent,
   instantiateReactComponent: instantiateReactComponent,
+  instancesByReactRootID: instancesByReactRootID,
+  containersByReactRootID: containersByReactRootID,
 }
 
 if(typeof module !== 'undefined') {

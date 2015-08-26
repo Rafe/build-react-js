@@ -192,35 +192,35 @@ describe('ReactCompositeComponent.mountComponent', function() {
   })
 })
 
-// // step 6: let's render!
+// step 6: let's render!
 
-// describe('React.render', function() {
-  // it('set rendered markup files to container', function() {
-    // var div = React.DOM.div
-    // var App = React.createClass({
-      // render: function() {
-        // return div(null, [
-          // 'test'
-        // ])
-      // }
-    // })
+describe('React.render', function() {
+  it('set rendered markup files to container', function() {
+    var div = React.DOM.div
+    var App = React.createClass({
+      render: function() {
+        return div(null, [
+          'test'
+        ])
+      }
+    })
 
-    // var container = {
-      // addEventListener: function() {}
-    // }
+    var container = {
+      addEventListener: function() {}
+    }
 
-    // var element = React.createElement(App, { className: 'bar' }, null)
+    var element = React.createElement(App, { className: 'bar' }, null)
 
-    // React.render(element, container)
+    React.render(element, container)
 
-    // expect(container.innerHTML).toEqual(
-      // '<div data-reactid=".0">' +
-        // '<span data-reactid=".0.0">test</span>' +
-      // '</div>'
-    // )
-    // expect(React.instancesByReactRootID['.0']._currentElement).toEqual(element)
-  // })
-// })
+    expect(container.innerHTML).toEqual(
+      '<div data-reactid=".0">' +
+        '<span data-reactid=".0.0">test</span>' +
+      '</div>'
+    )
+    expect(React.instancesByReactRootID['.0']._currentElement).toEqual(element)
+  })
+})
 
 // // step 7: let's getNode by ReactID!
 
