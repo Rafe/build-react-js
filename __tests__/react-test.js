@@ -17,39 +17,39 @@ describe('React.createElement', function() {
 
 // step 2: let's create DOM!
 
-// describe('React.DOM', function() {
-  // it('creates dom elements', function() {
-    // ['div', 'h1', 'p', 'a'].forEach(function(type) {
-      // var element = React.DOM[type](null, null)
-      // expect(element.type).toEqual(type)
-    // })
-  // })
+describe('React.DOM', function() {
+  it('creates dom elements', function() {
+    ['div', 'h1', 'p', 'a'].forEach(function(type) {
+      var element = React.DOM[type](null, null)
+      expect(element.type).toEqual(type)
+    })
+  })
 
-  // it('creates nested dom tree', function() {
-    // var tree = React.DOM.div(null, [
-      // React.DOM.div(null, [
-        // React.DOM.p(null, ['test']),
-        // React.DOM.a(null, ['link']),
-      // ])
-    // ])
+  it('creates nested dom tree', function() {
+    var tree = React.DOM.div(null, [
+      React.DOM.div(null, [
+        React.DOM.p(null, ['test']),
+        React.DOM.a(null, ['link']),
+      ])
+    ])
 
-    // expect(tree.type).toEqual('div')
-    // expect(tree.props.children.length).toEqual(1)
+    expect(tree.type).toEqual('div')
+    expect(tree.props.children.length).toEqual(1)
 
-    // var child = tree.props.children[0]
+    var child = tree.props.children[0]
 
-    // expect(child.type).toEqual('div')
-    // expect(child.props.children.length).toEqual(2)
+    expect(child.type).toEqual('div')
+    expect(child.props.children.length).toEqual(2)
 
-    // child = child.props.children[0]
+    child = child.props.children[0]
 
-    // expect(child.type).toEqual('p')
+    expect(child.type).toEqual('p')
 
-    // child = child.props.children[0]
+    child = child.props.children[0]
 
-    // expect(child).toEqual('test')
-  // })
-// })
+    expect(child).toEqual('test')
+  })
+})
 
 // // step 3: let's create Components!
 

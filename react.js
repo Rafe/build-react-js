@@ -13,8 +13,15 @@ var createElement = function(type, config, children) {
   return new ReactElement(type, props)
 }
 
+var DOM = {};
+['div', 'a', 'h1', 'p'].forEach(function(type) {
+  DOM[type] = createElement.bind(null, type)
+})
+
+
 var React = {
   createElement: createElement,
+  DOM: DOM,
 }
 
 if(typeof module !== 'undefined') {
