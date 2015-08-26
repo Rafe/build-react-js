@@ -29,6 +29,13 @@ ReactDOMTextComponent.prototype.mountComponent = function(rootID) {
   return ('<span data-reactid="' + rootID + '">' + this._currentElement + '</span>')
 }
 
+ReactDOMTextComponent.prototype.receiveComponent = function(nextText) {
+  if(this._currentElement != nextText) {
+    var node = React.getNode(this._rootID)
+    node.innerHTML = nextText
+  }
+}
+
 var ReactCompositeComponent = function(element) {
   this._currentElement = element
 }
@@ -86,7 +93,6 @@ ReactDOMComponent.prototype.createMarkupForStyles = function(props) {
     return ''
   }
 }
-
 
 function instantiateReactComponent(node) {
   if(typeof node === 'object') {
@@ -187,6 +193,7 @@ function dispatchEvent(eventType, event) {
 
 // return reactRootID
 var instancesByReactRootID = {}
+var rootContainer;
 function registerComponent(component, container) {
   var reactRootID = getRootIDString(container)
   instancesByReactRootID[reactRootID] = component
@@ -198,7 +205,24 @@ function getRootIDString(container) {
   return '.' + containerIndex++
 }
 
+function getNode(targetID) {
+  var child = rootContainer.firstChild
+
+  var sequenceID = targetID.split('.')
+  sequenceID.shift()
+  while(child) {
+    var id = child.getAttribute('data-reactid')
+    if (id === targetID) {
+      return child
+    } else {
+      child = child.children[sequenceID.shift()]
+    }
+  }
+}
+
 function render(element, container) {
+  rootContainer = container
+
   var topComponent = instantiateReactComponent(element)
 
   var reactRootID = registerComponent(topComponent, container)
@@ -208,12 +232,12 @@ function render(element, container) {
   container.innerHTML = topComponent.mountComponent(reactRootID)
 }
 
-
 var React = {
   createElement: createElement,
   DOM: DOM,
   createClass: createClass,
   render: render,
+  getNode: getNode,
 }
 
 if(!window) {
