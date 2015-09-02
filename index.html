@@ -2,20 +2,12 @@
 <html>
   <head>
     <title>React Lab</title>
-    <style>
-      a.button {
-        padding: 5px;
-        border: 1px gray solid;
-        border-radius: 4px;
-        cursor: pointer;
-        background-color: gray;
-      }
-    </style>
+    <link rel='stylesheet' href='./node_modules/bootstrap/dist/css/bootstrap.min.css'/>
   </head>
   <body>
-    <div id='container'></div>
+    <div id='container' class='container'></div>
     <!-- <script src='./react.js'></script> -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js'></script>
+    <script src='./node_modules/react/dist/react.js'></script>
     <script type='text/javascript'>
       var DOM = React.DOM
       var App = React.createClass({
@@ -38,7 +30,7 @@
               DOM.p(null, ["Watchout for what React you're using... it might not be real!"]),
               DOM.p(null, ["React is running for " + this.state.timestamp + "ms"])
             ]),
-            DOM.a({ className: 'button', onClick: this.handleClick.bind(this) }, ["Click me!!!"])
+            DOM.a({ className: 'btn btn-default', onClick: this.handleClick.bind(this) }, ["Click me!!!"])
           ])
         }
       })
