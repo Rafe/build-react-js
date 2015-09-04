@@ -385,11 +385,38 @@ describe('React.ReactDOMComponent.receiveComponent', function() {
     var component = React.instantiateReactComponent(tree)
     var mockComponent1 = jasmine.createSpyObj('component', ['receiveComponent'])
     var mockComponent2 = jasmine.createSpyObj('component', ['receiveComponent'])
+    mockComponent1._currentElement = React.DOM.div(null, null)
+    mockComponent2._currentElement = React.DOM.div(null, null)
+
     component._renderedComponents = [ mockComponent1, mockComponent2 ]
+
     component.receiveComponent(tree)
     expect(mockComponent1.receiveComponent).toHaveBeenCalled()
     expect(mockComponent2.receiveComponent).toHaveBeenCalled()
   })
+})
+
+describe('React.shouldUpdateReactComponent', function() {
+  it('returns true when elements are both string', function() {
+    expect(React.shouldUpdateReactComponent('str', 'str'))
+      .toEqual(true)
+  })
+
+  it("returns true when elements are same type", function() {
+    var element1 = React.DOM.div(null, null)
+    var element2 = React.DOM.div({ className: 'something'}, null)
+
+    expect(React.shouldUpdateReactComponent(element1, element2))
+      .toEqual(true)
+  });
+
+  it("returns false when elements are different type", function() {
+    var element1 = React.DOM.div(null, null)
+    var element2 = React.DOM.p(null, null)
+
+    expect(React.shouldUpdateReactComponent(element1, element2))
+      .toEqual(false)
+  });
 })
 
 // extra:

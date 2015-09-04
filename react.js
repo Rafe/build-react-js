@@ -101,14 +101,26 @@ ReactDOMComponent.prototype.receiveComponent = function(nextElement) {
   for(var i = 0; nextChildren.length > i; i++) {
     var childElement = nextChildren[i]
     var childComponent = this._renderedComponents[i]
-    if (shouldUpdateReactComponent(childComponent, nextElement)) {
+    if (shouldUpdateReactComponent(childComponent._currentElement, childElement)) {
       childComponent.receiveComponent(childElement)
     }
   }
 }
 
-function shouldUpdateReactComponent(prevComponent, nextElement) {
-  return true
+function shouldUpdateReactComponent(prevElement, nextElement) {
+  if (prevElement != null && nextElement != null) {
+    var prevType = typeof prevElement
+    var nextType = typeof nextElement
+    if (prevType == 'string' || prevType === 'number') {
+      return nextType === 'string' || nextType === 'number'
+    } else {
+      return (
+        nextType === 'object' &&
+        prevElement.type === nextElement.type
+      )
+    }
+    return false
+  }
 }
 
 ReactDOMComponent.prototype.createMarkupForStyles = function(props) {
@@ -185,8 +197,6 @@ var ReactEventEmitter = {
   }
 }
 
-
-
 var instancesByReactRootID = {}
 var containersByReactRootID = {};
 function registerComponent(component, container) {
@@ -244,6 +254,7 @@ var React = {
   instancesByReactRootID: instancesByReactRootID,
   containersByReactRootID: containersByReactRootID,
   ReactEventEmitter: ReactEventEmitter,
+  shouldUpdateReactComponent: shouldUpdateReactComponent,
 }
 
 if(typeof module !== 'undefined') {
