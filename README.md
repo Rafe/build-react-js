@@ -1,21 +1,21 @@
-1. Let's create Element & Component!
-2. Let's mount component to container!
-3. Let's create reactID!
-4. Let's capture the event!
-5. Let's update component!
-ex:
-6. Let's add lifecycle!
-7. Let's create updateQueue!
-8. Let's create transaction!
+# How to use this?
 
-=> what is the full render cycle?
-=> how to write event?
-=> how to generate root ids? and set update?
-=> + transaction?
-=> BackendIDOperation
+Open index.html for example,
+checkout #step1-9 and let the test pass to complete the framework.
 
-# todos:
+# How to run test?
 
-1. create google presentation
-2. draw diagram for internal concept
-3. finish up small clone of react
+`npm install`
+`jest`
+
+# Steps:
+
+1. Let's create element!
+2. Let's create DOM!
+3. Let's create Components!
+4. Let's create class!
+5. Let's mount Components!
+6. Let's render!
+7. Let's getNode by ReactID!
+8. Let's capture event!
+9. Let's update!
